@@ -2,10 +2,16 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <PackageId>t0pez.SpecificationExtensions.Core</PackageId>
+        <Authors>t0pez</Authors>
+        <Description>Library provides a few extensions for Ardalis.Specification package</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/t0pez/SpecificationExtensions</RepositoryUrl>
+        <PackageTags>Ardalis.Specification, Specification, Extensions</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Ardalis.Specification" Version="6.1.0" />
+        <PackageReference Include="Ardalis.Specification" Version="6.1.0" />
     </ItemGroup>
 
 </Project>

@@ -2,10 +2,18 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <Authors>t0pez</Authors>
+        <PackageId>t0pez.SpecificationExtensions.Generators</PackageId>
+        <RepositoryUrl>https://github.com/t0pez/SpecificationExtensions</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Description>Library provides a source generators for t0pez.SpecificationExtensions.Core project</Description>
+        <PackageTags>Ardalis.Specification, Specification, Extensions</PackageTags>
+        <Version>1.0.2</Version>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
+        <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
 
 </Project>
