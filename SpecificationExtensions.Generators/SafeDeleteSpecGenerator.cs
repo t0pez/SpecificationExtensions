@@ -53,8 +53,8 @@ namespace SpecificationExtensions.Generators
                     var safeDeleteTypeArgExpressionSyntax = GetTypeOfExpression(attributeArgumentList);
                     var safeDeleteTypeAsString = safeDeleteTypeArgExpressionSyntax?.Type.ToString();
 
-                    var safeDeletePropArgExpressionSyntax = GetNameOfExpression(attributeArgumentList);
-                    var safeDeletePropString = GetNameOfExpressionArgument(safeDeletePropArgExpressionSyntax);
+                    var safeDeletePropNameOfExpressionSyntax = GetNameOfExpression(attributeArgumentList);
+                    var safeDeletePropString = GetArgumentFromNameOfExpression(safeDeletePropNameOfExpressionSyntax);
                     var safeDeletePropAsString = safeDeletePropString?.Split('.').Last();
 
                     var code = SpecCode.SafeDeleteSpecCode;
@@ -77,9 +77,9 @@ namespace SpecificationExtensions.Generators
         }
 
         private static string GetNamespaceDirective(SemanticModel semanticModel,
-                                                    ClassDeclarationSyntax safeDeleteSpecDeclarationSyntax)
+                                                    ClassDeclarationSyntax classDeclarationSyntax)
         {
-            var typeSymbol = semanticModel.GetDeclaredSymbol(safeDeleteSpecDeclarationSyntax);
+            var typeSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax);
             var namespaceDirective = typeSymbol?.ContainingNamespace.ToString();
             return namespaceDirective;
         }
@@ -93,22 +93,20 @@ namespace SpecificationExtensions.Generators
 
         private static TypeOfExpressionSyntax GetTypeOfExpression(AttributeArgumentListSyntax attributeArgumentList)
         {
-            var safeDeleteTypeArgExpressionSyntax =
-                attributeArgumentList?.Arguments.First().Expression as TypeOfExpressionSyntax;
-            return safeDeleteTypeArgExpressionSyntax;
+            var typeOfExpressionSyntax = attributeArgumentList?.Arguments.First().Expression as TypeOfExpressionSyntax;
+            return typeOfExpressionSyntax;
         }
 
-        private static InvocationExpressionSyntax GetNameOfExpression(
-            AttributeArgumentListSyntax attributeArgumentList)
+        private static InvocationExpressionSyntax GetNameOfExpression(AttributeArgumentListSyntax attributeArgumentList)
         {
-            var safeDeletePropArgExpressionSyntax =
+            var nameOfExpressionSyntax =
                 attributeArgumentList?.Arguments.Last().Expression as InvocationExpressionSyntax;
-            return safeDeletePropArgExpressionSyntax;
+            return nameOfExpressionSyntax;
         }
 
-        private static string GetNameOfExpressionArgument(InvocationExpressionSyntax safeDeletePropArgExpressionSyntax)
+        private static string GetArgumentFromNameOfExpression(InvocationExpressionSyntax nameOfExpressionSyntax)
         {
-            return safeDeletePropArgExpressionSyntax?.ArgumentList.Arguments.First().ToString();
+            return nameOfExpressionSyntax?.ArgumentList.Arguments.First().ToString();
         }
     }
 }
