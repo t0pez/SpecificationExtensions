@@ -16,11 +16,25 @@ namespace SpecificationExtensions.Core.Specifications
             return this;
         }
 
-        public BaseSpec<TModel> ExceptBy(IEnumerable<TModel> values, Func<TModel, object> predicate)
+        public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TModel> values, Func<TModel, TKey> predicate)
         {
-            Query
-                .PostProcessingAction(models => models.ExceptBy(values, predicate));
+            foreach (var value in values)
+            {
+                Query
+                    .Where(model => predicate(model).Equals(predicate(value)) == false);
+            }
 
+            return this;
+        }
+        
+        public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TKey> values, Func<TModel, TKey> predicate)
+        {
+            foreach (var value in values)
+            {
+                Query
+                    .Where(model => predicate(model).Equals(value) == false);
+            }
+            
             return this;
         }
     }
