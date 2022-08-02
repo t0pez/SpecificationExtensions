@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using Ardalis.Specification;
-using SpecificationExtensions.Core.Extensions;
 
 namespace SpecificationExtensions.Core.Specifications
 {
@@ -16,26 +17,37 @@ namespace SpecificationExtensions.Core.Specifications
             return this;
         }
 
-        public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TModel> values, Func<TModel, TKey> predicate)
-        {
-            foreach (var value in values)
+        public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TKey> values, Expression<Func<TModel, TKey>> selector)
             {
-                Query
-                    .Where(model => predicate(model).Equals(predicate(value)) == false);
-            }
-
-            return this;
-        }
+                foreach (var value in values)
+                {
+                    var lambda = GetNotEqualExpression(selector, value);
         
-        public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TKey> values, Func<TModel, TKey> predicate)
-        {
-            foreach (var value in values)
-            {
-                Query
-                    .Where(model => predicate(model).Equals(value) == false);
+                    Query
+                        .Where(lambda);
+                }
+                
+                return this;
             }
             
-            return this;
-        }
+            public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TModel> models, Expression<Func<TModel, TKey>> selector)
+            {
+                var compiledSelector = selector.Compile();
+                var values = models.Select(compiledSelector);
+        
+                ExceptBy(values, selector);
+                
+                return this;
+            }
+        
+            private Expression<Func<TModel, bool>> GetNotEqualExpression<TKey>(Expression<Func<TModel, TKey>> predicate, TKey value)
+            {
+                var parameterExpression = predicate.Parameters.Single();
+                var constantExpression = Expression.Constant(value);
+                var notEqualExpression = Expression.NotEqual(predicate.Body, constantExpression);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(notEqualExpression, parameterExpression);
+                
+                return lambda;
+            }
     }
 }
