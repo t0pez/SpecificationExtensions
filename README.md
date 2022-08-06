@@ -1,6 +1,12 @@
 # SpecificationExtensions
 
-This two packages adds some extensions for Ardalis.Specification package
+This repository contains two projects
+
+#### - t0pez.SpecificationExtensions.Core
+#### - t0pez.SpecificationExtensions.Generators
+
+These two packages adds a few extensions for Ardalis.Specification package. 
+Using these packages gives you an opportunity make you specifications more reusable
 
 ## Package SpecificationExtensions.Core 
 Provides few base specifications and extesions for them
@@ -21,12 +27,29 @@ var spec = new BaseSpec<Entity>().EnablePaging(10, 20);
 Or you could write your own extension method using this one to use your own pagination filters
 
 Example:
+
 ```cs
-public static BaseSpec<T> EnablePaginationFilter<T>(this BaseSpec<T> spec, PaginationFilter filter)
+public static BaseSpec<T> EnablePaginationFilter<T>(this BaseSpec<T> spec, YourPaginationFilter filter)
 {
     return spec.EnablePaging(filter.Skip, filter.Take);
 }
 ```
+---
+
+Also it provides ExceptBy method with two overloads, which accepts whole models or only values you need to except.
+
+```cs
+public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TModel> models, Expression<Func<TModel, TKey>> selector);
+public BaseSpec<TModel> ExceptBy<TKey>(IEnumerable<TKey> values, Expression<Func<TModel, TKey>> selector);
+```
+
+Example:
+
+```cs
+var entitiesToExcept = ...;
+var spec = new SomeEntitySpec().ExceptBy(entitiesToExcept, entity => entity.Name);
+```
+
 ____
 
 ### Class `SelectSpec<TModel, TResult>` 
@@ -36,7 +59,7 @@ Contains constructor which applied in extension method
 Specification<TModel, TResult> Select<TModel, TResult>(this Specification<TModel> spec, Expression<Func<TModel, TResult>> selector)
 ```
 
-Which one gives you opportunity to make you already existing specs more reusable
+Which one gives you an opportunity to make Select from already existing specs
 
 ```cs
 var spec = new SomeEntitySpec().Select(entity => entity.Name);
@@ -45,7 +68,7 @@ var spec = new SomeEntitySpec().Select(entity => entity.Name);
 ____
 
 
-Also this package contails an `SafeDeleteSpecAttribute`. For use it you need next package
+Also this package contains an `SafeDeleteSpecAttribute`. For use it you need next package
 
 
 ## Package SpecificationExtensions.Generators
@@ -75,7 +98,7 @@ Pass to constuctor `typeof()` expression of your class/interface and `nameof` ex
 
 **Warning! `nameof()` expression is required. Don't try to write string literal there!**
 
-This will generate a class for you. Wich by default searches only for entities with deletion status `false`
+This will generate a class for you. Which by default searches only for entities with deletion status `false`
 
 But if you need to choose other variant of predicate you can call one of the method that class has
 
@@ -99,7 +122,9 @@ public class SafeDeleteEntityByNameSpec : SafeDeleteSpec<SafeDeleteEntity>
     }
 }
 
+var entitiesToExcept = ...;
 var spec = new SafeDeleteEntityByNameSpec(predicateName)
                    .LoadAll()
+                   .ExceptBy(entitiesToExcept, entity => entity.Name)
                    .Select(entity => entity.Name);
 ```
